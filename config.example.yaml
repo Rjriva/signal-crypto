@@ -1,0 +1,22 @@
+exchange: "binance"
+
+scanner:
+  symbols: ["BTC/USDT", "ETH/USDT"]
+  timeframes: ["15m", "1h"]
+
+volume:
+  sma_period: 20
+  multiplier: 2.0
+  absorption_body_ratio: 0.3
+  absorption_range_ratio: 0.4
+
+risk:
+  initial_capital: 10000
+  risk_per_trade: 0.01
+  atr_multiplier: 1.5
+  rr: 2.0
+
+filters:
+  use_rsi: true
+  use_macd: true
+  allow_sideways: true
