@@ -2,7 +2,8 @@ exchange: "binance"
 
 scanner:
   symbols: ["BTC/USDT", "ETH/USDT"]
-  timeframes: ["15m", "1h"]
+  timeframes: ["15m"]
+  use_all_usdt_futures: true
 
 volume:
   sma_period: 20
