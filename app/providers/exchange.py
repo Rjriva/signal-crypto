@@ -11,11 +11,32 @@ from app.utils.logger import setup_logger
 
 logger = setup_logger()
 
-
 def _cache_path(symbol: str, timeframe: str) -> Path:
-    safe_symbol = symbol.replace("/", "_")
+    safe_symbol = symbol.replace("/", "_").replace(":", "_")
     return Path("app/data") / f"{safe_symbol}_{timeframe}.csv"
 
+def _build_exchange(exchange_name: str, market_type: Optional[str] = None) -> ccxt.Exchange:
+    exchange_class = getattr(ccxt, exchange_name)
+    config = {"enableRateLimit": True}
+    if market_type:
+        config["options"] = {"defaultType": market_type}
+    return exchange_class(config)
+
+def fetch_usdt_futures_symbols(exchange_name: str) -> list[str]:
+    exchange = _build_exchange(exchange_name, market_type="future")
+    markets = exchange.load_markets()
+    symbols: list[str] = []
+    for market in markets.values():
+        if not market.get("active", True):
+            continue
+        if not market.get("contract"):
+            continue
+        if market.get("quote") != "USDT":
+            continue
+        if not market.get("linear", False):
+            continue
+        symbols.append(market["symbol"])
+    return sorted(symbols)
 
 def fetch_ohlcv(
     exchange_name: str,
@@ -23,13 +44,13 @@ def fetch_ohlcv(
     timeframe: str,
     limit: int = 500,
     use_cache: bool = True,
+    market_type: Optional[str] = None,
 ) -> pd.DataFrame:
     cache_file = _cache_path(symbol, timeframe)
     if use_cache and cache_file.exists():
         return pd.read_csv(cache_file)
 
-    exchange_class = getattr(ccxt, exchange_name)
-    exchange = exchange_class({"enableRateLimit": True})
+    exchange = _build_exchange(exchange_name, market_type=market_type)
 
     for attempt in range(3):
         try:
