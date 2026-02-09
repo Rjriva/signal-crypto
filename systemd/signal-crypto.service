@@ -1,0 +1,15 @@
+[Unit]
+Description=Signal Crypto Scanner
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/root/signal-crypto
+Environment=PYTHONPATH=/root/signal-crypto
+EnvironmentFile=/root/signal-crypto/.env
+ExecStart=/root/.venv/bin/python /root/signal-crypto/scripts/run_scan.py
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
