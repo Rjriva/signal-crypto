@@ -24,6 +24,7 @@ class RiskConfig(BaseModel):
 class ScannerConfig(BaseModel):
     symbols: List[str] = Field(default_factory=lambda: ["BTC/USDT"])
     timeframes: List[str] = Field(default_factory=lambda: ["15m"])
+    use_all_usdt_futures: bool = False
 
 
 class StrategyFilters(BaseModel):
